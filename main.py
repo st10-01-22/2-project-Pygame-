@@ -1,7 +1,7 @@
+import os
 import pygame
 import sys
 from art import tprint
-import os
 
 
 def terminate():
@@ -26,13 +26,21 @@ def load_image(name, color_key=None):
     return image
 
 
+def load_level(filename):
+    filename = "data/" + filename
+    with open(filename, 'r') as mapFile:
+        level_map = [line.strip() for line in mapFile]
+    max_width = max(map(len, level_map))
+    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+
+
 def start_screen():
     intro_text = ["ЗАСТАВКА", "",
                   "Правила игры",
                   "Если в правилах несколько строк,",
                   "приходится выводить их построчно"]
 
-    fon = pygame.transform.scale(load_image('test1.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('fon.png'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
@@ -54,14 +62,6 @@ def start_screen():
                 return
         pygame.display.flip()
         clock.tick(FPS)
-
-
-def load_level(filename):
-    filename = "data/" + filename
-    with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
-    max_width = max(map(len, level_map))
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
 def generate_level(level):
@@ -105,24 +105,21 @@ class Player(pygame.sprite.Sprite):
 
 
 class Camera:
-    # зададим начальный сдвиг камеры
     def __init__(self):
         self.dx = 0
         self.dy = 0
 
-    # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
         obj.rect.x += self.dx
         obj.rect.y += self.dy
 
-    # позиционировать камеру на объекте target
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
 
 
 if __name__ == "__main__":
-    size = width, height = 1500, 700
+    size = width, height = 1500, 800
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
@@ -130,19 +127,19 @@ if __name__ == "__main__":
     tiles_group = pygame.sprite.Group()
     barriers_group = pygame.sprite.Group()
     player = None
-    dist = 100
     FPS = 50
-    tile_width = tile_height = 32
+    pygame.init()
     tile_images = {
-        'wall': load_image('trava.png'),
-        'empty': load_image('gorka_pr.png')
+        'wall': load_image('горка.png'),
+        'empty': load_image('trava.png')
     }
     player_image = load_image('lich.png')
-    player, level_x, level_y = generate_level(load_level('map.txt'))
-    pygame.init()
-    running = True
-    camera = Camera()
+    tile_width = tile_height = 31
     start_screen()
+    player, level_x, level_y = generate_level(load_level('map.txt'))
+    running = True
+    dist = 100
+    camera = Camera()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
