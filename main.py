@@ -35,10 +35,7 @@ def load_level(filename):
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = []
 
     fon = pygame.transform.scale(load_image('fon.png'), (width, height))
     screen.blit(fon, (0, 0))
@@ -70,8 +67,34 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 Tile('empty', x, y)
-            elif level[y][x] == '#':
-                Tile('wall', x, y)
+            elif level[y][x] == '<':
+                Tile('hill1', x, y)
+            elif level[y][x] == '=':
+                Tile('hill2', x, y)
+            elif level[y][x] == '>':
+                Tile('hill3', x, y)
+            elif level[y][x] == '^':
+                Tile('hut', x, y)
+            elif level[y][x] == '/':
+                Tile('forestt', x, y)
+            elif level[y][x] == '|':
+                Tile('forestd', x, y)
+            elif level[y][x] == '0':
+                Tile('water', x, y)
+            elif level[y][x] == '1':
+                Tile('house1', x, y)
+            elif level[y][x] == '2':
+                Tile('house2', x, y)
+            elif level[y][x] == '3':
+                Tile('house3', x, y)
+            elif level[y][x] == '4':
+                Tile('house4', x, y)
+            elif level[y][x] == '&':
+                Tile('mountain', x, y)
+            elif level[y][x] == 's':
+                Tile('dark', x, y)
+            elif level[y][x] == '!':
+                Tile('rock', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 new_player = Player(x, y)
@@ -130,8 +153,21 @@ if __name__ == "__main__":
     FPS = 50
     pygame.init()
     tile_images = {
-        'wall': load_image('горка.png'),
-        'empty': load_image('trava.png')
+        'empty': load_image('trava.png'),
+        'hill1': load_image('gorka_pr.png'),
+        'hill2': load_image('горка.png'),
+        'hill3': load_image('gorka_lev.png'),
+        'hut': load_image('шалаш.png'),
+        'forestt': load_image('лесвверх.png'),
+        'forestd': load_image('лесниз.png'),
+        'water': load_image('water.png'),
+        'house1': load_image('house1.png'),
+        'house2': load_image('house2.png'),
+        'house3': load_image('house3.png'),
+        'house4': load_image('house4.png'),
+        'mountain': load_image('mountain.png'),
+        'dark': load_image('dark.png'),
+        'rock': load_image('rock.png'),
     }
     player_image = load_image('lich.png')
     tile_width = tile_height = 31
