@@ -90,7 +90,7 @@ def generate_level(level):
                 Tile('house4', x, y)
             elif level[y][x] == '&':
                 Tile('mountain', x, y)
-            elif level[y][x] == 's':
+            elif level[y][x] == '5':
                 Tile('dark', x, y)
             elif level[y][x] == '!':
                 Tile('rock', x, y)
@@ -123,13 +123,13 @@ def generate_dungeon_level(level):
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
-        if tile_type != 'empty':
-            super().__init__(tiles_group, all_sprites, barriers_group)
+        if tile_type == 'dark':
+            super().__init__(tiles_group, all_sprites, tp_group)
             self.image = tile_images[tile_type]
             self.rect = self.image.get_rect().move(
                 tile_width * pos_x, tile_height * pos_y)
-        elif tile_type == 'dark':
-            super().__init__(tiles_group, all_sprites, tp_group)
+        elif tile_type != 'empty':
+            super().__init__(tiles_group, all_sprites, barriers_group)
             self.image = tile_images[tile_type]
             self.rect = self.image.get_rect().move(
                 tile_width * pos_x, tile_height * pos_y)
