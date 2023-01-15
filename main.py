@@ -120,6 +120,9 @@ def generate_dungeon_level(level):
             elif level[y][x] == '@':
                 Tile('carpet', x, y)
                 new_player = Player(load_image("ходьба вправо.png", (0, 0, 0)), 4, 1, x, y)
+            elif level[y][x] == '6':
+                Tile('carpet', x, y)
+                Slime(load_image("атака слайма.png", (0, 0, 0)), 4, 1, x, y)
     return new_player, x, y
 
 
@@ -178,15 +181,38 @@ class Player(pygame.sprite.Sprite):
 
 
 class Slime(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, sheet, columns, rows, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
-        self.image = player_image
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
     def move(self, new_x, new_y):
         self.rect.x = new_x
         self.rect.y = new_y
+
+    def get_event(self, sheet, columns, rows, x, y):
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.image.get_rect().move(x, y)
 
 
 class Camera:
@@ -260,7 +286,7 @@ def start_level():
 
 
 def dungeon_level():
-    player, level_x, level_y = generate_dungeon_level(load_level('dangeon_map.txt'))
+    player, level_x, level_y,  = generate_dungeon_level(load_level('dangeon_map.txt'))
     camera = Camera()
     running = True
     dist = 7
@@ -310,6 +336,7 @@ def dungeon_level():
             barriers_group.empty()
             tp_group.empty()
             return 1
+        clock.tick(FPS)
         pygame.display.flip()
 
 
@@ -323,7 +350,7 @@ if __name__ == "__main__":
     barriers_group = pygame.sprite.Group()
     tp_group = pygame.sprite.Group()
     player = None
-    FPS = 20
+    FPS = 15
     pygame.init()
     tile_images = {
         'empty': load_image('trava.png'),
