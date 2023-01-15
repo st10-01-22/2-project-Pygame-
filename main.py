@@ -182,7 +182,7 @@ class Player(pygame.sprite.Sprite):
 
 class Slime(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, pos_x, pos_y):
-        super().__init__(player_group, all_sprites)
+        super().__init__(slime_group, all_sprites)
         self.frames = []
         self.cut_sheet(sheet, columns, rows)
         self.cur_frame = 0
@@ -202,17 +202,6 @@ class Slime(pygame.sprite.Sprite):
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
-
-    def move(self, new_x, new_y):
-        self.rect.x = new_x
-        self.rect.y = new_y
-
-    def get_event(self, sheet, columns, rows, x, y):
-        self.frames = []
-        self.cut_sheet(sheet, columns, rows)
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-        self.rect = self.image.get_rect().move(x, y)
 
 
 class Camera:
@@ -328,6 +317,7 @@ def dungeon_level():
             for sprite in all_sprites:
                 camera.apply(sprite)
             player_group.draw(screen)
+            slime_group.draw(screen)
             all_sprites.update()
         else:
             all_sprites.empty()
@@ -335,6 +325,7 @@ def dungeon_level():
             tiles_group.empty()
             barriers_group.empty()
             tp_group.empty()
+            slime_group.empty()
             return 1
         clock.tick(FPS)
         pygame.display.flip()
@@ -349,6 +340,7 @@ if __name__ == "__main__":
     tiles_group = pygame.sprite.Group()
     barriers_group = pygame.sprite.Group()
     tp_group = pygame.sprite.Group()
+    slime_group = pygame.sprite.Group()
     player = None
     FPS = 15
     pygame.init()
@@ -375,7 +367,6 @@ if __name__ == "__main__":
         'carpet': load_image('ковёр.png'),
         'tp': load_image('портал.png')
     }
-    player_image = load_image('орк_шаг_влево0.png', (255, 255, 255))
     tile_width = tile_height = 31
     start_screen()
     run_all = True
