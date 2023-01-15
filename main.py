@@ -168,8 +168,13 @@ if __name__ == "__main__":
         'mountain': load_image('mountain.png'),
         'dark': load_image('dark.png'),
         'rock': load_image('rock.png'),
+        'ladder': load_image('ladder.png'),
+        'wall': load_image('dungeon wall.png'),
+        'torch': load_image('torch.png'),
+        'floor': load_image('dungeon floor.png'),
+        'carpet': load_image('ковёр.png'),
     }
-    player_image = load_image('lich.png')
+    player_image = load_image('орк_шаг_влево0.png', (255, 255, 255))
     tile_width = tile_height = 31
     start_screen()
     player, level_x, level_y = generate_level(load_level('map.txt'))
@@ -181,13 +186,13 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
             key = pygame.key.get_pressed()
-            if key[pygame.K_DOWN]:
+            if key[pygame.K_s]:
                 player.move(player.rect.x, player.rect.y + dist)
-            if key[pygame.K_UP]:
+            if key[pygame.K_w]:
                 player.move(player.rect.x, player.rect.y - dist)
-            if key[pygame.K_RIGHT]:
+            if key[pygame.K_d]:
                 player.move(player.rect.x + dist, player.rect.y)
-            if key[pygame.K_LEFT]:
+            if key[pygame.K_a]:
                 player.move(player.rect.x - dist, player.rect.y)
         screen.fill(pygame.Color("black"))
         all_sprites.draw(screen)
