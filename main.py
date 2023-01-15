@@ -177,7 +177,6 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(x, y)
 
 
-
 class Slime(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
@@ -235,6 +234,11 @@ def start_level():
                 y = player.rect.y
                 player.get_event(load_image('ходьба влево вниз.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x - dist, player.rect.y)
+            if key[pygame.K_SPACE]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('удар вправо.png', (0, 0, 0)), 3, 1, x, y)
+
         if not pygame.sprite.spritecollideany(player, tp_group):
             screen.fill(pygame.Color("black"))
             all_sprites.draw(screen)
@@ -266,13 +270,30 @@ def dungeon_level():
                 running = False
             key = pygame.key.get_pressed()
             if key[pygame.K_s]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба влево вниз.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x, player.rect.y + dist)
             if key[pygame.K_w]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба вверх.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x, player.rect.y - dist)
             if key[pygame.K_d]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба вправо.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x + dist, player.rect.y)
             if key[pygame.K_a]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба влево вниз.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x - dist, player.rect.y)
+            if key[pygame.K_SPACE]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('удар вправо.png', (0, 0, 0)), 3, 1, x, y)
+
         if not pygame.sprite.spritecollideany(player, tp_group):
             screen.fill(pygame.Color("black"))
             all_sprites.draw(screen)
