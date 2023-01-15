@@ -169,6 +169,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = new_x
         self.rect.y = new_y
 
+    def get_event(self, sheet, columns, rows, x, y):
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.image.get_rect().move(x, y)
+
+
 
 class Slime(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -180,6 +188,7 @@ class Slime(pygame.sprite.Sprite):
     def move(self, new_x, new_y):
         self.rect.x = new_x
         self.rect.y = new_y
+
 
 class Camera:
     def __init__(self):
@@ -207,12 +216,24 @@ def start_level():
                 running = False
             key = pygame.key.get_pressed()
             if key[pygame.K_s]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба влево вниз.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x, player.rect.y + dist)
             if key[pygame.K_w]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба вверх.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x, player.rect.y - dist)
             if key[pygame.K_d]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба вправо.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x + dist, player.rect.y)
             if key[pygame.K_a]:
+                x = player.rect.x
+                y = player.rect.y
+                player.get_event(load_image('ходьба влево вниз.png', (0, 0, 0)), 4, 1, x, y)
                 player.move(player.rect.x - dist, player.rect.y)
         if not pygame.sprite.spritecollideany(player, tp_group):
             screen.fill(pygame.Color("black"))
@@ -281,7 +302,7 @@ if __name__ == "__main__":
     barriers_group = pygame.sprite.Group()
     tp_group = pygame.sprite.Group()
     player = None
-    FPS = 10
+    FPS = 20
     pygame.init()
     tile_images = {
         'empty': load_image('trava.png'),
