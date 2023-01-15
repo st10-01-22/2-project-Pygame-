@@ -36,7 +36,6 @@ def load_level(filename):
 
 def start_screen():
     intro_text = []
-
     fon = pygame.transform.scale(load_image('fon.png'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
@@ -98,13 +97,39 @@ def generate_level(level):
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 new_player = Player(x, y)
+
+    return new_player, x, y
+
+
+def generate_dungeon_level(level):
+    new_player, x, y = None, None, None
+    for y in range(len(level)):
+        for x in range(len(level[y])):
+            if level[y][x] == '.':
+                Tile('floor', x, y)
+            elif level[y][x] == '/':
+                Tile('wall', x, y)
+            elif level[y][x] == '&':
+                Tile('ladder', x, y)
+            elif level[y][x] == '|':
+                Tile('torch', x, y)
+            elif level[y][x] == '#':
+                Tile('carpet', x, y)
+            elif level[y][x] == '@':
+                Tile('carpet', x, y)
+                new_player = Player(x, y)
     return new_player, x, y
 
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
-        if tile_type == 'wall':
+        if tile_type != 'empty':
             super().__init__(tiles_group, all_sprites, barriers_group)
+            self.image = tile_images[tile_type]
+            self.rect = self.image.get_rect().move(
+                tile_width * pos_x, tile_height * pos_y)
+        elif tile_type == 'dark':
+            super().__init__(tiles_group, all_sprites, tp_group)
             self.image = tile_images[tile_type]
             self.rect = self.image.get_rect().move(
                 tile_width * pos_x, tile_height * pos_y)
@@ -141,6 +166,74 @@ class Camera:
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
 
 
+def start_level():
+    player, level_x, level_y = generate_level(load_level('map.txt'))
+    camera = Camera()
+    running = True
+    dist = 7
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            key = pygame.key.get_pressed()
+            if key[pygame.K_s]:
+                player.move(player.rect.x, player.rect.y + dist)
+            if key[pygame.K_w]:
+                player.move(player.rect.x, player.rect.y - dist)
+            if key[pygame.K_d]:
+                player.move(player.rect.x + dist, player.rect.y)
+            if key[pygame.K_a]:
+                player.move(player.rect.x - dist, player.rect.y)
+        if not pygame.sprite.spritecollideany(player, tp_group):
+            screen.fill(pygame.Color("black"))
+            all_sprites.draw(screen)
+            tiles_group.draw(screen)
+            camera.update(player)
+            for sprite in all_sprites:
+                camera.apply(sprite)
+            player_group.draw(screen)
+            all_sprites.update()
+        else:
+            all_sprites.empty()
+            player_group.empty()
+            tiles_group.empty()
+            barriers_group.empty()
+            tp_group.empty()
+            return
+        pygame.display.flip()
+
+
+def dungeon_level():
+    player, level_x, level_y = generate_dungeon_level(load_level('dangeon_map.txt'))
+    camera = Camera()
+    running = True
+    dist = 7
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            key = pygame.key.get_pressed()
+            if key[pygame.K_s]:
+                player.move(player.rect.x, player.rect.y + dist)
+            if key[pygame.K_w]:
+                player.move(player.rect.x, player.rect.y - dist)
+            if key[pygame.K_d]:
+                player.move(player.rect.x + dist, player.rect.y)
+            if key[pygame.K_a]:
+                player.move(player.rect.x - dist, player.rect.y)
+
+        screen.fill(pygame.Color("black"))
+        all_sprites.draw(screen)
+        tiles_group.draw(screen)
+        camera.update(player)
+        for sprite in all_sprites:
+            camera.apply(sprite)
+        player_group.draw(screen)
+        all_sprites.update()
+        pygame.display.flip()
+
+
 if __name__ == "__main__":
     size = width, height = 1500, 800
     screen = pygame.display.set_mode(size)
@@ -149,6 +242,7 @@ if __name__ == "__main__":
     player_group = pygame.sprite.Group()
     tiles_group = pygame.sprite.Group()
     barriers_group = pygame.sprite.Group()
+    tp_group = pygame.sprite.Group()
     player = None
     FPS = 50
     pygame.init()
@@ -177,31 +271,7 @@ if __name__ == "__main__":
     player_image = load_image('орк_шаг_влево0.png', (255, 255, 255))
     tile_width = tile_height = 31
     start_screen()
-    player, level_x, level_y = generate_level(load_level('map.txt'))
-    running = True
-    dist = 100
-    camera = Camera()
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            key = pygame.key.get_pressed()
-            if key[pygame.K_s]:
-                player.move(player.rect.x, player.rect.y + dist)
-            if key[pygame.K_w]:
-                player.move(player.rect.x, player.rect.y - dist)
-            if key[pygame.K_d]:
-                player.move(player.rect.x + dist, player.rect.y)
-            if key[pygame.K_a]:
-                player.move(player.rect.x - dist, player.rect.y)
-        screen.fill(pygame.Color("black"))
-        all_sprites.draw(screen)
-        tiles_group.draw(screen)
-        camera.update(player)
-        for sprite in all_sprites:
-            camera.apply(sprite)
-        player_group.draw(screen)
-        all_sprites.update()
-        pygame.display.flip()
+    start_level()
+    dungeon_level()
     tprint("MADE BY NOWMAN")
     pygame.quit()
