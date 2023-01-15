@@ -203,6 +203,14 @@ class Slime(pygame.sprite.Sprite):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         self.image = self.frames[self.cur_frame]
 
+    def get_attacked(self, pos, sheet, columns, rows, x, y):
+        if pygame.sprite.collide_mask(self, pos):
+            self.frames = []
+            self.cut_sheet(sheet, columns, rows)
+            self.cur_frame = 0
+            self.image = self.frames[self.cur_frame]
+            self.rect = self.image.get_rect().move(x, y)
+
 
 class Camera:
     def __init__(self):
@@ -307,7 +315,13 @@ def dungeon_level():
             if key[pygame.K_SPACE]:
                 x = player.rect.x
                 y = player.rect.y
+                c = (x, y)
+                print(c)
                 player.get_event(load_image('удар вправо.png', (0, 0, 0)), 3, 1, x, y)
+                for slime in slime_group:
+                    x_2 = slime.rect.x
+                    y_2 = slime.rect.y
+                    slime.get_attacked(player, load_image('слизень умер.png', (255, 255, 255)), 1, 1, x_2, y_2)
 
         if not pygame.sprite.spritecollideany(player, tp_group):
             screen.fill(pygame.Color("black"))
