@@ -115,6 +115,8 @@ def generate_dungeon_level(level):
                 Tile('torch', x, y)
             elif level[y][x] == '#':
                 Tile('carpet', x, y)
+            elif level[y][x] == '5':
+                Tile('tp', x, y)
             elif level[y][x] == '@':
                 Tile('carpet', x, y)
                 new_player = Player(x, y)
@@ -123,7 +125,7 @@ def generate_dungeon_level(level):
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
-        if tile_type == 'dark':
+        if tile_type == 'dark' or tile_type == 'tp':
             super().__init__(tiles_group, all_sprites, tp_group)
             self.image = tile_images[tile_type]
             self.rect = self.image.get_rect().move(
@@ -200,7 +202,7 @@ def start_level():
             tiles_group.empty()
             barriers_group.empty()
             tp_group.empty()
-            return
+            return 2
         pygame.display.flip()
 
 
@@ -222,15 +224,22 @@ def dungeon_level():
                 player.move(player.rect.x + dist, player.rect.y)
             if key[pygame.K_a]:
                 player.move(player.rect.x - dist, player.rect.y)
-
-        screen.fill(pygame.Color("black"))
-        all_sprites.draw(screen)
-        tiles_group.draw(screen)
-        camera.update(player)
-        for sprite in all_sprites:
-            camera.apply(sprite)
-        player_group.draw(screen)
-        all_sprites.update()
+        if not pygame.sprite.spritecollideany(player, tp_group):
+            screen.fill(pygame.Color("black"))
+            all_sprites.draw(screen)
+            tiles_group.draw(screen)
+            camera.update(player)
+            for sprite in all_sprites:
+                camera.apply(sprite)
+            player_group.draw(screen)
+            all_sprites.update()
+        else:
+            all_sprites.empty()
+            player_group.empty()
+            tiles_group.empty()
+            barriers_group.empty()
+            tp_group.empty()
+            return 1
         pygame.display.flip()
 
 
@@ -267,11 +276,20 @@ if __name__ == "__main__":
         'torch': load_image('torch.png'),
         'floor': load_image('dungeon floor.png'),
         'carpet': load_image('ковёр.png'),
+        'tp': load_image('портал.png')
     }
     player_image = load_image('орк_шаг_влево0.png', (255, 255, 255))
     tile_width = tile_height = 31
     start_screen()
-    start_level()
-    dungeon_level()
+    run_all = True
+    flag = 1
+    while run_all:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run_all = False
+        if flag == 1:
+            flag = start_level()
+        elif flag == 2:
+            flag = dungeon_level()
     tprint("MADE BY NOWMAN")
     pygame.quit()
