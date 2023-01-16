@@ -316,7 +316,6 @@ def dungeon_level():
                 x = player.rect.x
                 y = player.rect.y
                 c = (x, y)
-                print(c)
                 player.get_event(load_image('удар вправо.png', (0, 0, 0)), 3, 1, x, y)
                 for slime in slime_group:
                     x_2 = slime.rect.x
@@ -393,5 +392,7 @@ if __name__ == "__main__":
             flag = start_level()
         elif flag == 2:
             flag = dungeon_level()
+
     tprint("MADE BY NOWMAN")
+    tprint("DRAWN BY lIGHTYEAR")
     pygame.quit()
